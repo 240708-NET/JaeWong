@@ -1,4 +1,4 @@
 # Jae Wong
 
-This is a repository used to practice version control tools.
+Projects and coding practices from the Revature .Net training.
 
