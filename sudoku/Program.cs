@@ -6,13 +6,16 @@
     bool[,] col;
     bool[,] blk;
 
-    Sudoku()
+    int MaxSpace;
+
+    Sudoku(int maxSpace)
     {
         board = new int[9, 9];
         random = new Random();
         row = new bool[9, 10];
         col = new bool[9, 10];
         blk = new bool[9, 10];
+        MaxSpace = maxSpace;
 
         FillBoard(0, 0);
         RemoveNumber();
@@ -61,7 +64,7 @@
     void RemoveNumber()
     {
         int x, y, backup;
-        while (true)
+        for (int i = 0; i < MaxSpace; i++)
         {
             x = random.Next(0, 9);
             y = random.Next(0, 9);
@@ -147,7 +150,7 @@
 
     static void Main(string[] args)
     {
-        Sudoku s = new Sudoku();
+        Sudoku s = new Sudoku(20);
         s.print();
     }
 }
