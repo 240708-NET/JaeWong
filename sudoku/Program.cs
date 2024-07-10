@@ -150,7 +150,21 @@
 
     static void Main(string[] args)
     {
-        Sudoku s = new Sudoku(20);
+        int maxSpace = 20;
+        if (args.Length >= 1)
+        {
+            try
+            {
+                maxSpace = Int32.Parse(args[0]);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Unable to parse max_space argument.");
+                Console.WriteLine("Using default max_space value: 20.");
+                Console.WriteLine();
+            }
+        }
+        Sudoku s = new Sudoku(maxSpace);
         s.print();
     }
 }
