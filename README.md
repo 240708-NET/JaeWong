@@ -1,4 +1,6 @@
 # Jae Wong
+Coding projects during the Revature .Net training.
 
-Projects and coding practices from the Revature .Net training.
-
+### List of Projects
+* Sudoku: A sudoku puzzle generator with configurable difficulty.
+* Editor: A minimalist console editor made with C#.

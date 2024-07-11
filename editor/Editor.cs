@@ -151,7 +151,7 @@
     {
         if (args.Length < 1)
         {
-            Console.WriteLine("usage: ./editor <filename>");
+            Console.WriteLine("usage: dotnet run <filename>");
             return;
         }
         //
