@@ -1,59 +1,58 @@
 ﻿public class Editor
 {
-    private string FileName;
-    private List<string> Buffer;
-    private int CursorRow;
-    private int CursorCol;
-    private int DisplayBaseRow;
-    private int DisplayBaseCol;
+    private FileHandle _fileHandle;
+    private List<string> _buffer;
+    private int _cursorRow;
+    private int _cursorCol;
+    private int _displayBaseRow;
+    private int _displayBaseCol;
     private const int DisplayMarginRow = 2;
     private const int DisplayMarginCol = 10;
     public bool Exit { get; private set; }
-    Editor(string fileName)
+    public Editor(string fileName)
     {
-        FileName = fileName;
-        CursorCol = 0;
-        CursorRow = 0;
-        Buffer = new List<string>(1);
+        _fileHandle = new FileHandle(fileName);
+        _buffer = _fileHandle.readLines();
+        _cursorCol = 0;
+        _cursorRow = 0;
+        _displayBaseRow = 0;
+        _displayBaseCol = 0;
         Exit = false;
-        DisplayBaseRow = 0;
-        DisplayBaseCol = 0;
-        ReadFile();
         Display();
     }
     // refresh the screen and cursor to reflect the editor's state
     public void Display()
     {
         // update display base
-        if (CursorRow > DisplayBaseRow + (Console.WindowHeight - 1) - DisplayMarginRow)
+        if (_cursorRow > _displayBaseRow + (Console.WindowHeight - 1) - DisplayMarginRow)
         {
-            DisplayBaseRow = CursorRow + DisplayMarginRow - (Console.WindowHeight - 1);
+            _displayBaseRow = _cursorRow + DisplayMarginRow - (Console.WindowHeight - 1);
         }
-        else if (CursorRow < DisplayBaseRow + DisplayMarginRow)
+        else if (_cursorRow < _displayBaseRow + DisplayMarginRow)
         {
-            DisplayBaseRow = Math.Max(CursorRow - DisplayMarginRow, 0);
+            _displayBaseRow = Math.Max(_cursorRow - DisplayMarginRow, 0);
         }
-        if (CursorCol > DisplayBaseCol + (Console.WindowWidth - 1) - DisplayMarginCol)
+        if (_cursorCol > _displayBaseCol + (Console.WindowWidth - 1) - DisplayMarginCol)
         {
-            DisplayBaseCol = CursorCol + DisplayMarginCol - (Console.WindowWidth - 1);
+            _displayBaseCol = _cursorCol + DisplayMarginCol - (Console.WindowWidth - 1);
         }
-        else if (CursorCol < DisplayBaseCol + DisplayMarginCol)
+        else if (_cursorCol < _displayBaseCol + DisplayMarginCol)
         {
-            DisplayBaseCol = Math.Max(CursorCol - DisplayMarginCol, 0);
+            _displayBaseCol = Math.Max(_cursorCol - DisplayMarginCol, 0);
         }
         // append ANSI escape code to clear entire screen
         string DisplayString = "\x1b[2J\n";
-        // append buffer content
-        for (int i = DisplayBaseRow; i < DisplayBaseRow + Console.WindowHeight; i++)
+        // append _buffer content
+        for (int i = _displayBaseRow; i < _displayBaseRow + Console.WindowHeight; i++)
         {
-            if (i < Buffer.Count && Buffer[i].Length > DisplayBaseCol)
+            if (i < _buffer.Count && _buffer[i].Length > _displayBaseCol)
             {
-                DisplayString += Buffer[i].Substring(
-                    DisplayBaseCol,
-                    Math.Min(Console.WindowWidth, Buffer[i].Length - DisplayBaseCol)
+                DisplayString += _buffer[i].Substring(
+                    _displayBaseCol,
+                    Math.Min(Console.WindowWidth, _buffer[i].Length - _displayBaseCol)
                 );
             }
-            if (i < DisplayBaseRow + Console.WindowHeight - 1)
+            if (i < _displayBaseRow + Console.WindowHeight - 1)
             {
                 DisplayString += Environment.NewLine;
             }
@@ -61,54 +60,54 @@
         // update screen
         Console.Write(DisplayString);
         // update cursor
-        Console.SetCursorPosition(CursorCol - DisplayBaseCol, CursorRow - DisplayBaseRow);
+        Console.SetCursorPosition(_cursorCol - _displayBaseCol, _cursorRow - _displayBaseRow);
     }
     // update the editor's state accordring to the key stroke
     public void HandleKey(ConsoleKeyInfo keyInfo)
     {
         if (keyInfo.Key == ConsoleKey.UpArrow)
         {
-            CursorRow = Math.Max(CursorRow - 1, 0);
-            CursorCol = Math.Min(CursorCol, Buffer[CursorRow].Length);
+            _cursorRow = Math.Max(_cursorRow - 1, 0);
+            _cursorCol = Math.Min(_cursorCol, _buffer[_cursorRow].Length);
         }
         else if (keyInfo.Key == ConsoleKey.DownArrow)
         {
-            CursorRow = Math.Min(CursorRow + 1, Buffer.Count() - 1);
-            CursorCol = Math.Min(CursorCol, Buffer[CursorRow].Length);
+            _cursorRow = Math.Min(_cursorRow + 1, _buffer.Count() - 1);
+            _cursorCol = Math.Min(_cursorCol, _buffer[_cursorRow].Length);
         }
         else if (keyInfo.Key == ConsoleKey.LeftArrow)
         {
-            CursorCol = Math.Max(CursorCol - 1, 0);
+            _cursorCol = Math.Max(_cursorCol - 1, 0);
         }
         else if (keyInfo.Key == ConsoleKey.RightArrow)
         {
-            CursorCol = Math.Min(CursorCol + 1, CursorRow >= Buffer.Count ? 0 : Buffer[CursorRow].Length);
+            _cursorCol = Math.Min(_cursorCol + 1, _cursorRow >= _buffer.Count ? 0 : _buffer[_cursorRow].Length);
         }
         else if (keyInfo.Key == ConsoleKey.Backspace)
         {
-            if (CursorCol > 0)
+            if (_cursorCol > 0)
             {
-                Buffer[CursorRow] = Buffer[CursorRow].Remove(CursorCol - 1, 1);
-                CursorCol = CursorCol - 1;
+                _buffer[_cursorRow] = _buffer[_cursorRow].Remove(_cursorCol - 1, 1);
+                _cursorCol = _cursorCol - 1;
             }
-            else if (CursorRow > 0)
+            else if (_cursorRow > 0)
             {
-                CursorCol = Buffer[CursorRow - 1].Length;
-                Buffer[CursorRow - 1] = Buffer[CursorRow - 1] + Buffer[CursorRow];
-                Buffer.RemoveAt(CursorRow);
-                CursorRow = CursorRow - 1;
+                _cursorCol = _buffer[_cursorRow - 1].Length;
+                _buffer[_cursorRow - 1] = _buffer[_cursorRow - 1] + _buffer[_cursorRow];
+                _buffer.RemoveAt(_cursorRow);
+                _cursorRow = _cursorRow - 1;
             }
         }
         else if (keyInfo.Key == ConsoleKey.Enter)
         {
-            Buffer.Insert(CursorRow + 1, Buffer[CursorRow].Substring(CursorCol));
-            Buffer[CursorRow] = Buffer[CursorRow].Substring(0, CursorCol);
-            CursorRow = CursorRow + 1;
-            CursorCol = 0;
+            _buffer.Insert(_cursorRow + 1, _buffer[_cursorRow].Substring(_cursorCol));
+            _buffer[_cursorRow] = _buffer[_cursorRow].Substring(0, _cursorCol);
+            _cursorRow = _cursorRow + 1;
+            _cursorCol = 0;
         }
         else if (keyInfo.KeyChar == '\u0013')
         {
-            WriteFile();
+            _fileHandle.writeLines(_buffer);
         }
         else if (keyInfo.KeyChar == '\u0018')
         {
@@ -116,34 +115,8 @@
         }
         else if (keyInfo.KeyChar >= ' ')
         {
-            Buffer[CursorRow] = Buffer[CursorRow].Insert(CursorCol, char.ToString(keyInfo.KeyChar));
-            CursorCol = Math.Min(CursorCol + 1, CursorRow >= Buffer.Count ? 0 : Buffer[CursorRow].Length);
-        }
-    }
-    // read file from disk into editor's buffer
-    private void ReadFile()
-    {
-        string text = "";
-        try
-        {
-            StreamReader reader = new StreamReader(FileName);
-            text = reader.ReadToEnd();
-        }
-        catch (IOException e)
-        {
-            Console.WriteLine("The file could not be read:" + Environment.NewLine + e.Message);
-        }
-        Buffer = new List<string>(text.Split(Environment.NewLine));
-    }
-    // write file from editor's buffer into disk
-    private void WriteFile()
-    {
-        using (StreamWriter writer = new StreamWriter(FileName))
-        {
-            foreach (string line in Buffer)
-            {
-                writer.WriteLine(line);
-            }
+            _buffer[_cursorRow] = _buffer[_cursorRow].Insert(_cursorCol, char.ToString(keyInfo.KeyChar));
+            _cursorCol = Math.Min(_cursorCol + 1, _cursorRow >= _buffer.Count ? 0 : _buffer[_cursorRow].Length);
         }
     }
 
