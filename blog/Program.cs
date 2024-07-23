@@ -1,33 +1,26 @@
 ﻿using blog.Data;
 using blog.Models;
-using Microsoft.EntityFrameworkCore;
 
-using (var context = new DataContext())
+IRepository repo = new Repository();
+
+// reset
+foreach (Blog b in repo.GetBlogs())
 {
-    context.Blogs.RemoveRange(context.Blogs);
-    context.Posts.RemoveRange(context.Posts);
-    context.SaveChanges();
+    repo.RemoveBlog(b);
 }
 
-using (var context = new DataContext())
-{
-    var blog = new Blog { Name = "MyBlog" };
-    context.Add(blog);
-    context.SaveChanges();
-    blog.Posts.Add(new Post
-    {
-        Title = "Hello World Example",
-        Content = """Console.WriteLine("Hello, World!");""",
-        CreatedAt = DateTime.Now,
-    });
-    context.SaveChanges();
-}
+// create a blog and add a post
+var blog = new Blog { Name = "MyBlog" };
+repo.AddBlog(blog);
+repo.AddPost(new Post { BlogId = blog.Id, Title = "First Post", Content = "This is the first post!" });
+repo.AddPost(new Post { BlogId = blog.Id, Title = "Second Post", Content = "This is the second post." });
 
-using (var context = new DataContext())
+// print all blogs and their posts
+foreach (Blog b in repo.GetBlogs())
 {
-    var posts = from p in context.Posts where p.Blog.Name == "MyBlog" select p;
-    foreach (var post in posts)
+    Console.WriteLine(b.Name + "\n====\n");
+    foreach (Post p in repo.GetPosts(b))
     {
-        Console.WriteLine(post.Title + "\n----\n" + post.Content + "\n\n\n");
+        Console.WriteLine(p.Title + "\n----\n" + p.Content + "\n");
     }
 }

@@ -2,7 +2,12 @@ namespace blog.Data;
 
 using blog.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using System.Text.Json;
+
+class DatabaseConfig
+{
+    public required string ConnectionString { get; set; }
+}
 
 public class DataContext : DbContext
 {
@@ -11,7 +16,14 @@ public class DataContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite($"""Data Source={Path.Join(Environment.CurrentDirectory, "blog.db")}""");
-        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+        DatabaseConfig? databaseConfig = JsonSerializer.Deserialize<DatabaseConfig>(File.ReadAllText("config/database.json"));
+        if (databaseConfig is not null)
+        {
+            optionsBuilder.UseSqlServer(databaseConfig.ConnectionString);
+        }
+        else
+        {
+            optionsBuilder.UseSqlite("Data Source=blog.db");
+        }
     }
 }
