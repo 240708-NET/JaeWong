@@ -2,8 +2,6 @@ namespace blog.Data;
 
 using blog.Models;
 
-
-
 public class Repository : IRepository
 {
     public IEnumerable<Blog> GetBlogs()

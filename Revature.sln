@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blog", "blog\blog.csproj", "{9E65A074-9762-4ACF-B6A1-2AE8B4317CF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "editor", "editor\editor.csproj", "{EBC0BC9B-7A00-469E-9C27-4AFF3453A47C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sudoku", "sudoku\sudoku.csproj", "{44C1CD04-F2AA-48C3-9A77-5E070AD41631}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9E65A074-9762-4ACF-B6A1-2AE8B4317CF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E65A074-9762-4ACF-B6A1-2AE8B4317CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E65A074-9762-4ACF-B6A1-2AE8B4317CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E65A074-9762-4ACF-B6A1-2AE8B4317CF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBC0BC9B-7A00-469E-9C27-4AFF3453A47C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBC0BC9B-7A00-469E-9C27-4AFF3453A47C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBC0BC9B-7A00-469E-9C27-4AFF3453A47C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBC0BC9B-7A00-469E-9C27-4AFF3453A47C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44C1CD04-F2AA-48C3-9A77-5E070AD41631}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44C1CD04-F2AA-48C3-9A77-5E070AD41631}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44C1CD04-F2AA-48C3-9A77-5E070AD41631}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44C1CD04-F2AA-48C3-9A77-5E070AD41631}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
