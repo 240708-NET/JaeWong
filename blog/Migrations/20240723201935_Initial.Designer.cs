@@ -10,7 +10,7 @@ using blog.Data;
 
 namespace blog.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(BlogDb))]
     [Migration("20240723201935_Initial")]
     partial class Initial
     {

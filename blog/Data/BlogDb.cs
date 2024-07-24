@@ -9,7 +9,7 @@ class DatabaseConfig
     public required string ConnectionString { get; set; }
 }
 
-public class DataContext : DbContext
+public class BlogDb : DbContext
 {
     public DbSet<Blog> Blogs { get; set; }
     public DbSet<Post> Posts { get; set; }
@@ -20,10 +20,6 @@ public class DataContext : DbContext
         if (databaseConfig is not null)
         {
             optionsBuilder.UseSqlServer(databaseConfig.ConnectionString);
-        }
-        else
-        {
-            optionsBuilder.UseSqlite("Data Source=blog.db");
         }
     }
 }

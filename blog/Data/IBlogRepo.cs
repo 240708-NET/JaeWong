@@ -2,7 +2,7 @@ namespace blog.Data;
 
 using blog.Models;
 
-public interface IRepository
+public interface IBlogRepo
 {
     IEnumerable<Blog> GetBlogs();
     void AddBlog(Blog blog);
@@ -11,5 +11,5 @@ public interface IRepository
     IEnumerable<Post> GetPosts(Blog blog);
     void AddPost(Post post);
     void UpdatePost(Post post);
-    void RemovePosts(Post post);
+    void RemovePost(Post post);
 }
