@@ -1,15 +1,13 @@
 namespace blog.Data;
 
 using blog.Models;
-using Microsoft.EntityFrameworkCore;
 
 public class BlogRepo : IBlogRepo
 {
     public IEnumerable<Blog> GetBlogs()
     {
         using var context = new BlogDb();
-        // return [.. context.Blogs];
-        return context.Blogs.ToArray();
+        return [.. context.Blogs];
     }
     public void AddBlog(Blog blog)
     {
