@@ -1,6 +1,12 @@
 using blog.Data;
 using blog.Models;
 
+// Startup code for ASP.NET
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+BlogDb.ConnectionString = builder.Configuration["ConnectionString"] ?? "";
+var app = builder.Build();
 
 if (args.Length < 1)
 {
@@ -12,11 +18,6 @@ if (args.Length < 1)
 }
 else if (args[0] == "server")
 {
-    var builder = WebApplication.CreateBuilder(args);
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
-
-    var app = builder.Build();
     app.UseHttpsRedirection();
     if (app.Environment.IsDevelopment())
     {
@@ -24,7 +25,7 @@ else if (args[0] == "server")
         app.UseSwaggerUI();
     }
 
-    var repo = new BlogRepo(builder.Configuration["ConnectionString"] ?? "");
+    var repo = new BlogRepo();
     var api = app.MapGroup("/api");
     api.MapGet("/blog", () =>
     {

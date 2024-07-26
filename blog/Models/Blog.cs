@@ -1,7 +1,6 @@
 namespace blog.Models;
 
 using System.Text.Json.Serialization;
-using Swashbuckle.AspNetCore.Annotations;
 
 public class Blog
 {
