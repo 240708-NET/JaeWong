@@ -1,11 +1,13 @@
 using blog.Data;
 using blog.Models;
 
+using Microsoft.EntityFrameworkCore;
+
 // Startup code for ASP.NET
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-BlogDb.ConnectionString = builder.Configuration["ConnectionString"] ?? "";
+builder.Services.AddDbContext<BlogDb>(opt => opt.UseSqlServer(builder.Configuration["ConnectionString"]));
 var app = builder.Build();
 
 if (args.Length < 1)
@@ -25,47 +27,54 @@ else if (args[0] == "server")
         app.UseSwaggerUI();
     }
 
-    var repo = new BlogRepo();
     var api = app.MapGroup("/api");
-    api.MapGet("/blog", () =>
+    api.MapGet("/blog", (BlogDb db) =>
     {
+        var repo = new BlogRepo(db);
         return repo.GetBlogs();
     });
-    api.MapPost("/blog", (Blog blog) =>
+    api.MapPost("/blog", (BlogDb db, Blog blog) =>
     {
+        var repo = new BlogRepo(db);
         repo.AddBlog(blog);
         return Results.Created("", blog);
     });
-    api.MapPut("/blog/{id}", (int id, Blog blog) =>
+    api.MapPut("/blog/{id}", (BlogDb db, int id, Blog blog) =>
     {
+        var repo = new BlogRepo(db);
         blog.Id = id;
         repo.UpdateBlog(blog);
         return Results.NoContent();
     });
-    api.MapDelete("/blog/{id}", (int id) =>
+    api.MapDelete("/blog/{id}", (BlogDb db, int id) =>
     {
+        var repo = new BlogRepo(db);
         var blog = new Blog { Id = id, Name = "" };
         repo.RemoveBlog(blog);
         return Results.NoContent();
     });
-    api.MapGet("/blog/{id}/posts", (int id) =>
+    api.MapGet("/blog/{id}/posts", (BlogDb db, int id) =>
     {
+        var repo = new BlogRepo(db);
         var blog = new Blog { Id = id, Name = "" };
         return repo.GetPosts(blog);
     });
-    api.MapPost("/post", (Post post) =>
+    api.MapPost("/post", (BlogDb db, Post post) =>
     {
+        var repo = new BlogRepo(db);
         repo.AddPost(post);
         return Results.Created("", post);
     });
-    api.MapPut("/post/{id}", (int id, Post post) =>
+    api.MapPut("/post/{id}", (BlogDb db, int id, Post post) =>
     {
+        var repo = new BlogRepo(db);
         post.Id = id;
         repo.UpdatePost(post);
         return Results.NoContent();
     });
-    api.MapDelete("/post/{id}", (int id) =>
+    api.MapDelete("/post/{id}", (BlogDb db, int id) =>
     {
+        var repo = new BlogRepo(db);
         var post = new Post { Id = id, Title = "", Content = "" };
         repo.RemovePost(post);
         return Results.NoContent();
