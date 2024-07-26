@@ -1,91 +1,92 @@
 using blog.Data;
 using blog.Models;
 
-try
+
+if (args.Length < 1)
 {
-    if (args.Length < 1)
-    {
-        Console.WriteLine("""
+    Console.WriteLine("""
         Usage:
-        Server    dotnet run server
-        Client    dotnet run client <server_address>
+        Server    dotnet run server --launch-profile https
+        Client    dotnet run client <server_address>:<port>
         """);
-    }
-    else if (args[0] == "server")
+}
+else if (args[0] == "server")
+{
+    var builder = WebApplication.CreateBuilder(args);
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+
+    var app = builder.Build();
+    app.UseHttpsRedirection();
+    if (app.Environment.IsDevelopment())
     {
-        var builder = WebApplication.CreateBuilder(args);
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-
-        var app = builder.Build();
-        app.UseHttpsRedirection();
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-
-        var repo = new BlogRepo();
-        var api = app.MapGroup("/api");
-        api.MapGet("/blog", () =>
-        {
-            return repo.GetBlogs();
-        });
-        api.MapPost("/blog", (Blog blog) =>
-        {
-            repo.AddBlog(blog);
-            return Results.Created("", blog);
-        });
-        api.MapPut("/blog/{id}", (int id, Blog blog) =>
-        {
-            blog.Id = id;
-            repo.UpdateBlog(blog);
-            return Results.NoContent();
-        });
-        api.MapDelete("/blog/{id}", (int id) =>
-        {
-            var blog = new Blog { Id = id, Name = "" };
-            repo.RemoveBlog(blog);
-            return Results.NoContent();
-        });
-        api.MapGet("/blog/{id}/posts", (int id) =>
-        {
-            var blog = new Blog { Id = id, Name = "" };
-            return repo.GetPosts(blog);
-        });
-        api.MapPost("/post", (Post post) =>
-        {
-            repo.AddPost(post);
-            return Results.Created("", post);
-        });
-        api.MapPut("/post/{id}", (int id, Post post) =>
-        {
-            post.Id = id;
-            repo.UpdatePost(post);
-            return Results.NoContent();
-        });
-        api.MapDelete("/post/{id}", (int id) =>
-        {
-            var post = new Post { Id = id, Title = "", Content = "" };
-            repo.RemovePost(post);
-            return Results.NoContent();
-        });
-
-        app.Run();
+        app.UseSwagger();
+        app.UseSwaggerUI();
     }
-    else if (args[0] == "client")
+
+    var repo = new BlogRepo(builder.Configuration["ConnectionString"] ?? "");
+    var api = app.MapGroup("/api");
+    api.MapGet("/blog", () =>
     {
-        var client = new HttpClient();
+        return repo.GetBlogs();
+    });
+    api.MapPost("/blog", (Blog blog) =>
+    {
+        repo.AddBlog(blog);
+        return Results.Created("", blog);
+    });
+    api.MapPut("/blog/{id}", (int id, Blog blog) =>
+    {
+        blog.Id = id;
+        repo.UpdateBlog(blog);
+        return Results.NoContent();
+    });
+    api.MapDelete("/blog/{id}", (int id) =>
+    {
+        var blog = new Blog { Id = id, Name = "" };
+        repo.RemoveBlog(blog);
+        return Results.NoContent();
+    });
+    api.MapGet("/blog/{id}/posts", (int id) =>
+    {
+        var blog = new Blog { Id = id, Name = "" };
+        return repo.GetPosts(blog);
+    });
+    api.MapPost("/post", (Post post) =>
+    {
+        repo.AddPost(post);
+        return Results.Created("", post);
+    });
+    api.MapPut("/post/{id}", (int id, Post post) =>
+    {
+        post.Id = id;
+        repo.UpdatePost(post);
+        return Results.NoContent();
+    });
+    api.MapDelete("/post/{id}", (int id) =>
+    {
+        var post = new Post { Id = id, Title = "", Content = "" };
+        repo.RemovePost(post);
+        return Results.NoContent();
+    });
 
-        if (args.Length < 2)
-        {
-            Console.WriteLine("Usage: dotnet run client <server_address>");
-            return;
-        }
-        var apiAddress = $"https://{args[1]}/api";
+    app.Run();
+}
+else if (args[0] == "client")
+{
+    var client = new HttpClient();
 
-        Console.WriteLine("Enter 'help' to list all available commands.");
-        while (true)
+    if (args.Length < 2)
+    {
+        Console.WriteLine("Usage: dotnet run client <server_address>");
+        return;
+    }
+    var apiAddress = $"https://{args[1]}/api";
+
+    Console.WriteLine("Enter 'help' to list all available commands.");
+    while (true)
+    {
+        try
         {
             Console.Write("> ");
             var splitCommand = (Console.ReadLine() ?? "").Split();
@@ -105,7 +106,7 @@ try
                 """);
                 continue;
             }
-            else if (splitCommand[0] == "blog")
+            else if (splitCommand[0] == "blog" && splitCommand.Length >= 2)
             {
                 if (splitCommand[1] == "ls")
                 {
@@ -117,6 +118,7 @@ try
                             Console.WriteLine($"[{blog.Id}] {blog.Name}");
                         }
                     }
+                    continue;
                 }
                 else if (splitCommand[1] == "create")
                 {
@@ -127,6 +129,7 @@ try
                         new Blog { Name = name }
                     );
                     response.EnsureSuccessStatusCode();
+                    continue;
                 }
                 else if (splitCommand[1] == "rename")
                 {
@@ -143,6 +146,7 @@ try
                         new Blog { Name = name }
                     );
                     response.EnsureSuccessStatusCode();
+                    continue;
                 }
                 else if (splitCommand[1] == "remove")
                 {
@@ -154,9 +158,10 @@ try
                     var id = int.Parse(splitCommand[2]);
                     var response = await client.DeleteAsync($"{apiAddress}/blog/{id}");
                     response.EnsureSuccessStatusCode();
+                    continue;
                 }
             }
-            else if (splitCommand[0] == "post")
+            else if (splitCommand[0] == "post" && splitCommand.Length >= 2)
             {
                 if (splitCommand[1] == "ls")
                 {
@@ -177,6 +182,7 @@ try
                             """);
                         }
                     }
+                    continue;
                 }
                 else if (splitCommand[1] == "create")
                 {
@@ -201,6 +207,7 @@ try
                         new Post { BlogId = blogId, Title = title, Content = content }
                     );
                     response.EnsureSuccessStatusCode();
+                    continue;
                 }
                 else if (splitCommand[1] == "remove")
                 {
@@ -212,16 +219,19 @@ try
                     var id = int.Parse(splitCommand[2]);
                     var response = await client.DeleteAsync($"{apiAddress}/post/{id}");
                     response.EnsureSuccessStatusCode();
+                    continue;
                 }
             }
             else if (splitCommand[0] == "exit")
             {
                 break;
             }
+            Console.WriteLine("Unknown command.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
         }
     }
 }
-catch (Exception e)
-{
-    Console.WriteLine(e.Message);
-}
+
