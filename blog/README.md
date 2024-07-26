@@ -19,7 +19,10 @@ A blog server made with ASP.NET and its CLI client.
         ```sh
         dotnet ef database update
         ```
-    4. Run `dotnet run server --launch-profile https` to start the HTTPS server.
+    4. Start the HTTPS server:
+        ```sh
+        dotnet run server --launch-profile https
+        ```
 * Client
     1. Start the CLI: 
         ```sh
