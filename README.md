@@ -1,5 +1,5 @@
 # Jae Wong
-Coding projects and notes during the Revature .Net training.
+Using .NET Core and React to create applications and websites.
 
 ### List of Projects
 * [Sudoku](sudoku/): A sudoku puzzle generator with configurable difficulty.
