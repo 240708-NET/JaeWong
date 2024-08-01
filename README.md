@@ -1,5 +1,5 @@
-# Jae Wong
-Using .NET Core and React to create applications and websites.
+# .NET Core Projects
+Console and web applications made with .NET Core.
 
 ### List of Projects
 * [Sudoku](sudoku/): A sudoku puzzle generator with configurable difficulty.
