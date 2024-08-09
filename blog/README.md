@@ -13,7 +13,7 @@ A blog server made with ASP.NET and its CLI client.
 * Server
     1. Set up the `ConnectionString` user secret:
         ```sh
-        dotnet user-secret init
+        dotnet user-secrets init
         dotnet user-secrets set "ConnectionString" "Server=localhost; Database=<yourDatabase>; User Id=sa; Password=<yourPassword>; TrustServerCertificate=True"
         ```
     3. Run the migrations to initialize the database: 
